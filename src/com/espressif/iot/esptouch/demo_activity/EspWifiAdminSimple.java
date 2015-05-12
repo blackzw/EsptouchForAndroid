@@ -6,6 +6,15 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+/**
+ * 这里主要是简单的WiFi管理器
+ * 1. 获取手机当前连接的SSID：getWifiConnectedSsid
+ * 2. 获取曾经连接过的SSID：getConnectionInfo
+ * 3. 当前是否连接WiFi了：isWifiConnected
+ * 4. 获取当前的网络状态信息：getWifiNetworkInfo
+ * 
+ * */
+
 public class EspWifiAdminSimple {
 
 	private final Context mContext;

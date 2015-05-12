@@ -3,12 +3,13 @@ package com.espressif.iot.esptouch.protocol;
 import com.espressif.iot.esptouch.task.IEsptouchGenerator;
 import com.espressif.iot.esptouch.util.ByteUtil;
 
+//这个是最主要的产生SmartConfig广播报文的函数
 public class EsptouchGenerator implements IEsptouchGenerator {
 
-	private final byte[][] mGcBytes2;
-	private final byte[][] mMcBytes2;
-	private final byte[][] mPcBytes2;
-	private final byte[][] mDcBytes2;
+	private final byte[][] mGcBytes2;//Guide Code
+	private final byte[][] mMcBytes2;//Magic Code
+	private final byte[][] mPcBytes2;//Prefix Code
+	private final byte[][] mDcBytes2;//Data Code
 
 	/**
 	 * Constructor of EsptouchGenerator, it will cost some time(maybe a bit much)

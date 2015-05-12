@@ -63,6 +63,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		__interrupt();
 	}
 
+	//监听同步的问题
 	private void __listenAsyn(final int expectDataLen) {
 		new Thread() {
 			public void run() {

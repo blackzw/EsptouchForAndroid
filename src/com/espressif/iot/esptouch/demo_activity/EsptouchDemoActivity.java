@@ -74,6 +74,9 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	/**
+	 * EsptouchAsyncTask在这个程序中没有用到
+	 * */
 	
 	private class EsptouchAsyncTask extends AsyncTask<String, Void, Boolean> {
 
@@ -136,6 +139,9 @@ public class EsptouchDemoActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	/**
+	 * EsptouchAsyncTask2是主要的配置任务
+	 * */
 	private class EsptouchAsyncTask2 extends AsyncTask<String, Void, IEsptouchResult> {
 
 		private ProgressDialog mProgressDialog;
