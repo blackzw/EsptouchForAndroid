@@ -12,7 +12,7 @@ import com.espressif.iot.esptouch.IEsptouchResult;
  */
 public interface __IEsptouchTask {
 	
-	static final long INTERVAL_GUIDE_CODE_MILLISECOND = 10;
+	static final long INTERVAL_GUIDE_CODE_MILLISECOND = 5;//10;//³¢ÊÔ¸ÄÎª5ms
 
 	static final long INTERVAL_MAGIC_CODE_MILLISECOND = 10;
 
@@ -36,7 +36,7 @@ public interface __IEsptouchTask {
 	/*
 	 * TIMEOUT_MILLISECOND_GUIDE_CODE is used to chech wehther the GUIDE_CODE sent enough time
 	 */
-	static final long TIMEOUT_MILLISECOND_GUIDE_CODE = 2000;
+	static final long TIMEOUT_MILLISECOND_GUIDE_CODE = 400;//2000;//modified by zhongwt@tcl.com
 	/*
 	 * TIMEOUT_MILLISECOND_ONCE is used to check whether the DATA_CODE sent enough time
 	 */

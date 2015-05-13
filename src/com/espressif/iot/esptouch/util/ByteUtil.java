@@ -213,6 +213,16 @@ public class ByteUtil {
 		}
 		return data;
 	}
+	//是自己理解错了，上面的函数是按照len的需求创造长度
+//	public static byte[] genSpecBytes2(char len) {
+//		byte[] data = new byte[4];
+//		data[0] = '1';
+//		for (int i = 1; i < 4; i++) {
+//			data[i] = data[i-1];
+//			data[i]++;
+//		}
+//		return data;
+//	}
 	
 	/**
 	 * Generate the random byte to be sent

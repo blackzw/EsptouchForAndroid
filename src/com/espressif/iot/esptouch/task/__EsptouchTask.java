@@ -63,7 +63,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 		__interrupt();
 	}
 
-	//监听同步的问题
+	//这里应该是为了监听返回来的报文，看看是否配置成功了
 	private void __listenAsyn(final int expectDataLen) {
 		new Thread() {
 			public void run() {
@@ -155,18 +155,19 @@ public class __EsptouchTask implements __IEsptouchTask {
 	}
 
 	@SuppressWarnings("unused")
+	//modified by zhongwt@tcl.com, for airkiss
 	private boolean __execute(IEsptouchGenerator generator) {
 		
 		long startTime = System.currentTimeMillis();
 
-		// send guide code
+		// send guide code, 400ms
 		for (int i = 0; mIsInterrupt != true && i < REPEAT_GUIDE_CODE_TIMES; i++) {
 			if (__IEsptouchTask.DEBUG) {
 				Log.d(TAG, "send guide code " + i + " time");
 			}
-			//这里获得的是[49][49,49][49,49,49][49,49,49,49]，而不是airkiss的['1','2','3','4']
+			
 			mSocketClient.sendData(generator.getGCBytes2(), TARGET_HOSTNAME,
-					TARGET_PORT, INTERVAL_GUIDE_CODE_MILLISECOND);
+					TARGET_PORT, INTERVAL_GUIDE_CODE_MILLISECOND);//这里可以改为5ms一次
 			// check whether it is timeout
 			if (System.currentTimeMillis() - startTime > TIMEOUT_MILLISECOND_GUIDE_CODE) {
 				if (__IEsptouchTask.DEBUG) {
@@ -216,6 +217,68 @@ public class __EsptouchTask implements __IEsptouchTask {
 		}
 		return mIsSuc;
 	}
+	//原版的程序
+//	private boolean __execute(IEsptouchGenerator generator) {
+//		
+//		long startTime = System.currentTimeMillis();
+//
+//		// send guide code
+//		for (int i = 0; mIsInterrupt != true && i < REPEAT_GUIDE_CODE_TIMES; i++) {
+//			if (__IEsptouchTask.DEBUG) {
+//				Log.d(TAG, "send guide code " + i + " time");
+//			}
+//			//这里获得的是[49][49,49][49,49,49][49,49,49,49]，而不是airkiss的['1','2','3','4']
+//			mSocketClient.sendData(generator.getGCBytes2(), TARGET_HOSTNAME,
+//					TARGET_PORT, INTERVAL_GUIDE_CODE_MILLISECOND);//这里可以改为5ms一次
+//			// check whether it is timeout
+//			if (System.currentTimeMillis() - startTime > TIMEOUT_MILLISECOND_GUIDE_CODE) {
+//				if (__IEsptouchTask.DEBUG) {
+//					Log.d(TAG, "send guide code enough time");
+//				}
+//				break;
+//			}
+//		}
+//
+//		// send magic code
+//		for (int i = 0; mIsInterrupt != true && i < REPEAT_MAGIC_CODE_TIMES; i++) {
+//			if (__IEsptouchTask.DEBUG) {
+//				Log.d(TAG, "send magic code " + i + " time");
+//			}
+//			mSocketClient.sendData(generator.getMCBytes2(), TARGET_HOSTNAME,
+//					TARGET_PORT, INTERVAL_MAGIC_CODE_MILLISECOND);
+//		}
+//
+//		// send prefix code
+//		for (int i = 0; mIsInterrupt != true && i < REPEAT_PREFIX_CODE_TIMES; i++) {
+//			if (__IEsptouchTask.DEBUG) {
+//				Log.d(TAG, "send prefix code " + i + " time");
+//			}
+//			mSocketClient.sendData(generator.getPCBytes2(), TARGET_HOSTNAME,
+//					TARGET_PORT, INTERVAL_PREFIX_CODE_MILLISECOND);
+//		}
+//
+//		// send data code
+//		for (int i = 0; mIsInterrupt != true && i < REPEAT_DATA_CODE_TIMES; i++) {
+//			// it must be interrupted when mSocketServer receiving the feedback
+//			// from the device or timeout
+//			if (__IEsptouchTask.DEBUG) {
+//				Log.d(TAG, "send data code " + i + " time");
+//			}
+//			mSocketClient.sendData(generator.getDCBytes2(), TARGET_HOSTNAME,
+//					TARGET_PORT, INTERVAL_PREFIX_CODE_MILLISECOND);
+//			// check whether it is timeout
+//			if (System.currentTimeMillis() - startTime > TIMEOUT_MILLISECOND_ONCE) {
+//				if (__IEsptouchTask.DEBUG) {
+//					Log.d(TAG, "send data code enough time");
+//				}
+//				break;
+//			}
+//		}
+//		if (__IEsptouchTask.DEBUG && !mIsCancelled.get()) {
+//			Log.i(TAG, "__execute() finished, the result is " + mIsSuc);
+//		}
+//		return mIsSuc;
+//	}
 
 	private void __checkTaskValid() {
 		// !!!NOTE: the esptouch task could be executed only once

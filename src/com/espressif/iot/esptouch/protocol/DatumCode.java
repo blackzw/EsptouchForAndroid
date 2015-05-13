@@ -3,6 +3,7 @@ package com.espressif.iot.esptouch.protocol;
 import com.espressif.iot.esptouch.task.ICodeData;
 import com.espressif.iot.esptouch.util.ByteUtil;
 
+//DatumCode是包含了sequence header + Data Code字段的数据包
 public class DatumCode implements ICodeData {
 	
 	private final DataCode[] mDataCodes;
