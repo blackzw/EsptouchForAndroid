@@ -230,6 +230,7 @@ public class ByteUtil {
 	 * Generate the specific byte to be sent
 	 * @param len
 	 *            the len presented by byte
+	 *            为什么需要产生指定长度的相同的数字？
 	 * @return the byte[] 
 	 */
 	public static byte[] genSpecBytes(byte len) {

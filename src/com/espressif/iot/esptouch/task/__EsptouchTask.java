@@ -164,6 +164,7 @@ public class __EsptouchTask implements __IEsptouchTask {
 			if (__IEsptouchTask.DEBUG) {
 				Log.d(TAG, "send guide code " + i + " time");
 			}
+			//这里获得的是[49][49,49][49,49,49][49,49,49,49]，而不是airkiss的['1','2','3','4']
 			mSocketClient.sendData(generator.getGCBytes2(), TARGET_HOSTNAME,
 					TARGET_PORT, INTERVAL_GUIDE_CODE_MILLISECOND);
 			// check whether it is timeout

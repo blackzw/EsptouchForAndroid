@@ -32,11 +32,27 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 		// generate guide code
 		GuideCode gc = new GuideCode();
 		byte[] gcBytes1 = gc.getBytes();
-		mGcBytes2 = new byte[gcBytes1.length][];
+		mGcBytes2 = new byte[gcBytes1.length][4];//写死了4个
 
-		for (int i = 0; i < mGcBytes2.length; i++) {
-			mGcBytes2[i] = ByteUtil.genSpecBytes(gcBytes1[i]);
+//		for (int i = 0;  i++) {
+//			mGcBytes2[i] = ByteUtil.genSpecBytes(gcBytes1[i]);
+//		}
+
+		/**
+		 * 这里需要修改Guide Code的mGcBytes2的四个数组都改为{49, 50, 51, 52}
+		 * 理论上：
+		 * 需要先发送400ms的前导域
+		 * （400ms = 8*50ms，
+		 * 即如果设备端以50ms的频率切换信道，则可以覆盖8个信道，
+		 * 因为一般用户环境不用监听14个信道，所以覆盖8个信道足已)
+		 * */
+		byte gcAirKiss[] = {49, 50, 51, 52};
+		for(int j = 0; j < 4; j++){
+			for(int i = 0; i < 4; i++){
+				mGcBytes2[j][i] = gcAirKiss[i];
+			}
 		}
+
 
 		// generate magic code
 		MagicCode mc = new MagicCode(totalLen, apSsid);
