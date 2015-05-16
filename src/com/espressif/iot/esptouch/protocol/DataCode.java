@@ -7,69 +7,132 @@ import com.espressif.iot.esptouch.util.CRC8;
 /**
  * one data format:(data code should have 2 to 65 data)
  * 
- *              control byte       high 4 bits    low 4 bits 
- * 1st 9bits:       0x0             crc(high)      data(high)
- * 2nd 9bits:       0x1                sequence header
- * 3rd 9bits:       0x0             crc(low)       data(low)
+ * 
+ *              Control bit(BIT8)       data bits(BIT7~0) 
+ * 1st 9bits:       1               		data
+ * 2nd 9bits:       1               		data
+ * 3rd 9bits:       1               		data
+ * 4th 9bits:       1               		data
  * 
  * sequence header data
  * 
- * 8 7 6 5-0
- * 1 0 x index
- * if data(low) == 0, x = 1
- * else x = 0
+ * 8 7 6-0
+ * 0 1 sequence crc8(low 7bits)
+ * 0 1 sequence index
  * 
- * @author afunx
+ * 
+ * @author zhongwt@tcl.com
  * 
  */
 public class DataCode implements ICodeData{
 	
-	public static final int DATA_CODE_LEN = 6;
+public static final int DATA_CODE_LEN = 12;//modified by zhongwt@tcl.com
+	
 	
 	private static final int INDEX_MAX = 63;
 
-	private final byte mSeqHeader;
-    private final byte mDataHigh;
-    private final byte mDataLow;
+	private byte mSeqHeader2[];//final
+	private byte mDatas[];//final 
+	private int lenU8s;//len of char[] u8s
+	//private final byte mSeqHeader;
+    //private final byte mDataHigh;
+    //private final byte mDataLow;
     // the crc here means the crc of the data and sequence header be transformed
     // it is calculated by index and data to be transformed
-    private final byte mCrcHigh;
-    private final byte mCrcLow;
+    //private final byte mCrcHigh;
+    //private final byte mCrcLow;
 	
     /**
      * Constructor of DataCode
-     * @param u8 the character to be transformed
+     * @param u8s the character to be transformed
      * @param index the index of the char
      */
-	public DataCode(char u8, int index) {
+	public DataCode(char[] u8s, int index) {
 		if (index > INDEX_MAX) {
 			throw new RuntimeException("index > INDEX_MAX");
 		}
-		byte[] dataBytes = ByteUtil.splitUint8To2bytes(u8);
-		mDataHigh = dataBytes[0];
-		mDataLow = dataBytes[1];
-		CRC8 crc8 = new CRC8();
-		crc8.update(ByteUtil.convertUint8toByte(u8));
-		crc8.update(index);
-		byte[] crcBytes = ByteUtil.splitUint8To2bytes((char) crc8.getValue());
-		mCrcHigh = crcBytes[0];
-		mCrcLow = crcBytes[1];
-		if (mDataLow == 0 && mCrcLow == 0) {
-			mSeqHeader = (byte) (index | 101 << 6);
-		} else {
-			mSeqHeader = (byte) (index | 100 << 6);
+		lenU8s = 4;
+		mDatas = new byte[4];
+		mSeqHeader2 = new byte[4];
+		mSeqHeader2[0] = 0;
+		mSeqHeader2[1] = 0;//crcLow7
+		mSeqHeader2[2] = 0;
+		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)(index|0x80));
+		
+		//byte[] dataBytes = ByteUtil.convertBytes2Uint8s(u8s);
+//		mDataHigh = dataBytes[0];
+//		mDataLow = dataBytes[1];
+		byte[] buf = new byte[5];
+		buf[0] = mSeqHeader2[3];
+		for(int i = 1; i < 5; i++){
+			buf[i] = ByteUtil.convertUint8toByte(u8s[i-1]);
+			mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
 		}
+		CRC8 crc8 = new CRC8();
+		crc8.update(buf);
+		//crc8.update(index);
+		//byte[] crcBytes = ByteUtil.splitUint8To2bytes((char) crc8.getValue());
+		byte crcLow7 = ByteUtil.convertUint8toByte((char)(crc8.getValue()&0x7F|0x80));
+		mSeqHeader2[1] = crcLow7;
+//		mCrcHigh = crcBytes[0];
+//		mCrcLow = crcBytes[1];
+//		if (mDataLow == 0 && mCrcLow == 0) {
+//			mSeqHeader = (byte) (index | 101 << 6);
+//		} else {
+//			mSeqHeader = (byte) (index | 100 << 6);
+//		}
+	}
+	/**
+     * Constructor of DataCode
+     * @param u8s the character to be transformed
+     * @param index the index of the char
+     * @param len_less_4 the length of u8s < 4
+     */
+	public DataCode(char[] u8s, int index, int lenLess4){
+		if (index > INDEX_MAX) {
+			throw new RuntimeException("index > INDEX_MAX");
+		}
+		if(lenLess4 > 4){
+			throw new RuntimeException("len_less_4 > 4");
+		}
+		lenU8s = lenLess4;
+		mDatas = new byte[lenLess4];
+		mSeqHeader2 = new byte[4];
+		mSeqHeader2[0] = 0;
+		mSeqHeader2[1] = 0;//crcLow7
+		mSeqHeader2[2] = 0;
+		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)(index|0x80));
+		byte[] buf = new byte[lenLess4+1];
+		buf[0] = mSeqHeader2[3];
+		for(int i = 1; i < lenLess4+1; i++){
+			buf[i] = ByteUtil.convertUint8toByte(u8s[i-1]);
+			mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
+		}
+		CRC8 crc8 = new CRC8();
+		crc8.update(buf);
 	}
 	
 	@Override
 	public byte[] getBytes() {
-		byte[] dataBytes = new byte[DATA_CODE_LEN];
-		dataBytes[0] = 0x00;
-		dataBytes[1] = ByteUtil.combine2bytesToOne(mCrcHigh,mDataHigh);
-		dataBytes[2] = 0x01;
-		dataBytes[3] = mSeqHeader;
-		dataBytes[4] = 0x00;
-		dataBytes[5] = ByteUtil.combine2bytesToOne(mCrcLow, mDataLow);
+		byte[] dataBytes = new byte[4 + lenU8s*2];
+		dataBytes[0] = mSeqHeader2[0];
+		dataBytes[1] = mSeqHeader2[1];
+		dataBytes[2] = mSeqHeader2[2];
+		dataBytes[3] = mSeqHeader2[3];
+		
+		for(int i = 0; i < lenU8s; i++){
+			dataBytes[i+3] = 0x00;
+			dataBytes[i+4] = mDatas[i];
+		}
+
+//		dataBytes[0] = 0x00;
+//		dataBytes[1] = mDatas[0];
+//		dataBytes[2] = 0x00;
+//		dataBytes[3] = mDatas[1];
+//		dataBytes[4] = 0x00;
+//		dataBytes[5] = mDatas[2];
+//		dataBytes[6] = 0x00;
+//		dataBytes[7] = mDatas[3];
 		return dataBytes;
 	}
 	

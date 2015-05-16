@@ -26,7 +26,7 @@ public interface __IEsptouchTask {
 
 	static final long REPEAT_MAGIC_CODE_TIMES = 20;
 
-	static final long REPEAT_PREFIX_CODE_TIMES = 20;
+	static final long REPEAT_PREFIX_CODE_TIMES = 1;//20;
 	/*
 	 * REPEAT_DATA_CODE is INFINITE for it will be stop by its internal check
 	 * thread

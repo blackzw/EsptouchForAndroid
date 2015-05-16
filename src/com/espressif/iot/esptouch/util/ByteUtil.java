@@ -17,6 +17,7 @@ public class ByteUtil {
 	
 	/**
 	 * Put String to byte[]
+	 * 将字符串转换为byte
 	 * 
 	 * @param destbytes
 	 *            the byte[] of dest
@@ -38,6 +39,7 @@ public class ByteUtil {
 
 	/**
 	 * Convert uint8 into char( we treat char as uint8)
+	 * byte是有符号的？
 	 * 
 	 * @param uint8
 	 *            the unit8 to be converted

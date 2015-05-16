@@ -58,7 +58,8 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 
 		// generate data code
 		//除了SSID和PWD外，中间还应该增加一个BYTE的SEQ序列号
-		DatumCode dc = new DatumCode(apSsid, apPassword);
+		byte rankseq = ByteUtil.convertUint8toByte((char)(0x11));
+		DatumCode dc = new DatumCode(apSsid, rankseq,apPassword);
 		char[] dcU81 = dc.getU8s();
 		mDcBytes2 = new byte[dcU81.length][];
 
