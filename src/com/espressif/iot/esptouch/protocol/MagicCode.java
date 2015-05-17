@@ -1,5 +1,7 @@
 package com.espressif.iot.esptouch.protocol;
 
+import java.io.UnsupportedEncodingException;
+
 import com.espressif.iot.esptouch.task.ICodeData;
 import com.espressif.iot.esptouch.util.ByteUtil;
 import com.espressif.iot.esptouch.util.CRC8;
@@ -39,9 +41,12 @@ public class MagicCode implements ICodeData{
         if (totalLen < MAGIC_THRESHOLD) {
             totalLen += MAGIC_NUMBER;
         }
+        byte[] ssidWithBreak = new byte[ssid.length()];        
+        
         byte[] lengthBytes = ByteUtil.splitUint8To2bytes(totalLen);
         mLengthHigh = lengthBytes[0];
         mLengthLow = lengthBytes[1];
+        
         CRC8 crc8 = new CRC8();
         crc8.update(ByteUtil.getBytesByString(ssid));
         char crcValue = (char) crc8.getValue();

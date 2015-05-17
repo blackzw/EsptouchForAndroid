@@ -2,6 +2,7 @@ package com.espressif.iot.esptouch.protocol;
 
 import com.espressif.iot.esptouch.task.ICodeData;
 import com.espressif.iot.esptouch.util.ByteUtil;
+import java.util.Random;
 
 //DatumCode是包含了sequence header + Data Code字段的数据包
 public class DatumCode implements ICodeData {
@@ -9,14 +10,22 @@ public class DatumCode implements ICodeData {
 	private final DataCode[] mDataCodes;
 	private boolean isFull = false;
 	private int lenUnFull = 0;
+	private byte token = 0;//随机数，用于应用层的协议，设备广播后返回该token确认配置成功
+	private byte randomByte() {//产生谁技术
+        byte randByte = 0x0;
+        Random r = new Random();
+        randByte = (byte)r.nextInt(0x100);
+        return randByte;
+    }
 	/**
 	 * Constructor of DatumCode
 	 * @param apSsid the Ap's ssid
-	 * @param rankSeq TODO
 	 * @param apPassword the Ap's password
+	 * @param rankSeq TODO
 	 */
 	//DatumCode是包含了sequence header + Data Code字段的数据包
-	public DatumCode(String apSsid, byte rankSeq, String apPassword) {
+	public DatumCode(String apSsid, String apPassword) {
+		token = randomByte();//获取随机数作
 		// note apPassword must before apSsid
 		String info = apPassword +apSsid;
 		byte[] infoBytes = ByteUtil.getBytesByString(info);
@@ -39,7 +48,7 @@ public class DatumCode implements ICodeData {
 		for (int i = 0; i < infoBytes1.length; i++) {
 			infoChars[i] = ByteUtil.convertByte2Uint8(infoBytes1[i]);
 		}
-		infoChars[infoBytes1.length] = ByteUtil.convertByte2Uint8(rankSeq);
+		infoChars[infoBytes1.length] = ByteUtil.convertByte2Uint8(token);
 		for (int i = infoBytes1.length+1; i < (infoBytes.length+1); i++) {
 			infoChars[i] = ByteUtil.convertByte2Uint8(infoBytes2[i-(infoBytes1.length+1)]);
 		}
