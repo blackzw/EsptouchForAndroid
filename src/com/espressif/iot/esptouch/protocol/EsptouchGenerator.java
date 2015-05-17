@@ -52,6 +52,7 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 		}
 
 		// generate prefix code
+		//理论上，这个应该也OK了，
 		PrefixCode pc = new PrefixCode(pwdLen);
 		char[] pcU81 = pc.getU8s();
 		mPcBytes2 = new byte[pcU81.length][];
@@ -62,7 +63,7 @@ public class EsptouchGenerator implements IEsptouchGenerator {
 
 		// generate data code
 		//除了SSID和PWD外，中间还应该增加一个BYTE的SEQ序列号
-		byte rankseq = ByteUtil.convertUint8toByte((char)(0x11));
+		//byte rankseq = ByteUtil.convertUint8toByte((char)(0x11));
 		DatumCode dc = new DatumCode(apSsid, apPassword);
 		char[] dcU81 = dc.getU8s();
 		mDcBytes2 = new byte[dcU81.length][];

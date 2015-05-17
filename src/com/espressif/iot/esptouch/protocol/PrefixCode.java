@@ -34,7 +34,7 @@ public class PrefixCode implements ICodeData{
     	mPwdLengthHigh = pwdLengthBytes[0];
     	mPwdLengthLow = pwdLengthBytes[1];
     	CRC8 crc8 = new CRC8();
-        crc8.update(pwdLen);
+        crc8.update(ByteUtil.convertUint8toByte((char)pwdLen));
         char crcValue = (char) crc8.getValue();        
         byte[] crcBytes = ByteUtil.splitUint8To2bytes(crcValue);
         mPwdLenCrcHigh = crcBytes[0];
@@ -44,14 +44,14 @@ public class PrefixCode implements ICodeData{
 	@Override
 	public byte[] getBytes() {
 		byte[] magicBytes = new byte[PREFIX_CODE_LEN];
-        magicBytes[0] = 0x00;
-        magicBytes[1] = ByteUtil.convertUint8toByte((char)((0x04>>4)&0xF0|mPwdLengthHigh));//ByteUtil.combine2bytesToOne((byte) 0x04, mPwdLengthHigh);
+		magicBytes[0] = 0x00;
+        magicBytes[1] = ByteUtil.combine2bytesToOne((byte) 0x04, mPwdLengthHigh);
         magicBytes[2] = 0x00;
-        magicBytes[3] = ByteUtil.convertUint8toByte((char)((0x05>>4)&0xF0|mPwdLengthLow));//ByteUtil.combine2bytesToOne((byte) 0x05, mPwdLengthLow);
+        magicBytes[3] = ByteUtil.combine2bytesToOne((byte) 0x05, mPwdLengthLow);
         magicBytes[4] = 0x00;
-        magicBytes[5] = ByteUtil.convertUint8toByte((char)((0x06>>4)&0xF0|mPwdLenCrcHigh));//ByteUtil.combine2bytesToOne((byte) 0x06, mPwdLenCrcHigh);
+        magicBytes[5] = ByteUtil.combine2bytesToOne((byte) 0x06, mPwdLenCrcHigh);
         magicBytes[6] = 0x00;
-        magicBytes[7] = ByteUtil.convertUint8toByte((char)((0x07>>4)&0xF0|mPwdLenCrcLow));//ByteUtil.combine2bytesToOne((byte) 0x07, mPwdLenCrcLow);
+        magicBytes[7] = ByteUtil.combine2bytesToOne((byte) 0x07, mPwdLenCrcLow);
         return magicBytes;
 	}
 

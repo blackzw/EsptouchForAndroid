@@ -42,6 +42,27 @@ public static final int DATA_CODE_LEN = 12;//modified by zhongwt@tcl.com
     //private final byte mCrcHigh;
     //private final byte mCrcLow;
 	
+	/**重新写一个构造函数，直接导入byte[]
+	 * */
+//	public DataCode(byte[] databyte4, int index){
+//		if (index > INDEX_MAX) {
+//			throw new RuntimeException("index > INDEX_MAX");
+//		}
+//		mDatas = new byte[4];
+//		mSeqHeader2 = new byte[4];
+//		mSeqHeader2[0] = 0;
+//		mSeqHeader2[1] = 0;//crcLow7
+//		mSeqHeader2[2] = 0;
+//		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)((index&0xFF)|0x80));
+//		byte[] buf = new byte[5];
+//		buf[0] = ByteUtil.convertUint8toByte((char)(index&0xFF));
+//		System.arraycopy(databyte4, 0, buf, 1, 4);//将databyte4的内容复制到buf里面
+//		CRC8 crc8 = new CRC8();
+//		crc8.update(buf);
+//		byte crcLow7 = ByteUtil.convertUint8toByte((char)(crc8.getValue()&0x7F|0x80));
+//		mSeqHeader2[1] = crcLow7;
+//		
+//	}
     /**
      * Constructor of DataCode
      * @param u8s the character to be transformed
@@ -57,30 +78,24 @@ public static final int DATA_CODE_LEN = 12;//modified by zhongwt@tcl.com
 		mSeqHeader2[0] = 0;
 		mSeqHeader2[1] = 0;//crcLow7
 		mSeqHeader2[2] = 0;
-		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)(index|0x80));
-		
-		//byte[] dataBytes = ByteUtil.convertBytes2Uint8s(u8s);
-//		mDataHigh = dataBytes[0];
-//		mDataLow = dataBytes[1];
+		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)((index&0xFF)|0x80));
+
 		byte[] buf = new byte[5];
-		buf[0] = mSeqHeader2[3];
+		buf[0] = ByteUtil.convertUint8toByte((char)(index&0xFF));//mSeqHeader2[3];
 		for(int i = 1; i < 5; i++){
 			buf[i] = ByteUtil.convertUint8toByte(u8s[i-1]);
-			mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
+			//mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
+			mDatas[i-1] = ByteUtil.convertUint8toByte(u8s[i-1]);
 		}
 		CRC8 crc8 = new CRC8();
 		crc8.update(buf);
-		//crc8.update(index);
-		//byte[] crcBytes = ByteUtil.splitUint8To2bytes((char) crc8.getValue());
+
+		//byte crcLow7 = ByteUtil.convertUint8toByte((char)(crc8.getValue()&0x7F|0x80));
 		byte crcLow7 = ByteUtil.convertUint8toByte((char)(crc8.getValue()&0x7F|0x80));
+
+		
 		mSeqHeader2[1] = crcLow7;
-//		mCrcHigh = crcBytes[0];
-//		mCrcLow = crcBytes[1];
-//		if (mDataLow == 0 && mCrcLow == 0) {
-//			mSeqHeader = (byte) (index | 101 << 6);
-//		} else {
-//			mSeqHeader = (byte) (index | 100 << 6);
-//		}
+
 	}
 	/**
      * Constructor of DataCode
@@ -103,13 +118,16 @@ public static final int DATA_CODE_LEN = 12;//modified by zhongwt@tcl.com
 		mSeqHeader2[2] = 0;
 		mSeqHeader2[3] = ByteUtil.convertUint8toByte((char)(index|0x80));
 		byte[] buf = new byte[lenLess4+1];
-		buf[0] = mSeqHeader2[3];
+		buf[0] = ByteUtil.convertUint8toByte((char)(index&0xFF));//mSeqHeader2[3];
 		for(int i = 1; i < lenLess4+1; i++){
 			buf[i] = ByteUtil.convertUint8toByte(u8s[i-1]);
-			mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
+			//mDatas[i-1] = ByteUtil.convertUint8toByte((char)(u8s[i-1]| 0x80)) ;
+			mDatas[i-1] = ByteUtil.convertUint8toByte(u8s[i-1]);
 		}
 		CRC8 crc8 = new CRC8();
 		crc8.update(buf);
+		byte crcLow7 = ByteUtil.convertUint8toByte((char)(crc8.getValue()&0x7F|0x80));
+		mSeqHeader2[1] = crcLow7;
 	}
 	
 	@Override
@@ -121,8 +139,8 @@ public static final int DATA_CODE_LEN = 12;//modified by zhongwt@tcl.com
 		dataBytes[3] = mSeqHeader2[3];
 		
 		for(int i = 0; i < lenU8s; i++){
-			dataBytes[i+3] = 0x00;
-			dataBytes[i+4] = mDatas[i];
+			dataBytes[i*2+4] = 0x01;
+			dataBytes[i*2+5] = mDatas[i];
 		}
 
 //		dataBytes[0] = 0x00;
